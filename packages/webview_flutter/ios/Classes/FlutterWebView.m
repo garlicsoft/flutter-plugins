@@ -89,6 +89,7 @@
     NSDictionary<NSString*, id>* settings = args[@"settings"];
 
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
+    [configuration.preferences setValue:@(true) forKey:@"allowFileAccessFromFileURLs"];
     configuration.userContentController = userContentController;
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
                         inConfiguration:configuration];
@@ -422,12 +423,25 @@
 - (bool)loadUrl:(NSString*)url withHeaders:(NSDictionary<NSString*, NSString*>*)headers {
   NSURL* nsUrl = [NSURL URLWithString:url];
   if (!nsUrl) {
-    return false;
-  }
-  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
-  [request setAllHTTPHeaderFields:headers];
-  [_webView loadRequest:request];
-  return true;
+        return false;
+    }
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
+    [request setAllHTTPHeaderFields:headers];
+
+    //判断url的加载方式
+    if([url hasPrefix:@"http"]) {
+        [_webView loadRequest:request];
+    }else{
+        url = [url stringByReplacingOccurrencesOfString:@"file://" withString:@""];
+        if (@available(iOS 9.0, *)) {
+            NSURL *findUrl = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", [[NSBundle mainBundle] bundlePath], url]];
+
+            [_webView loadFileURL:findUrl allowingReadAccessToURL:[findUrl URLByDeletingLastPathComponent]];
+        } else {
+            NSLog(@"webview_flutter:  loadFileUrl error");
+        }
+    }
+    return true;
 }
 
 - (void)registerJavaScriptChannels:(NSSet*)channelNames
