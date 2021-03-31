@@ -109,6 +109,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     // Multi windows is set with FlutterWebChromeClient by default to handle internal bug: b/159892679.
     webView.getSettings().setSupportMultipleWindows(true);
     webView.setWebChromeClient(new FlutterWebChromeClient());
+    webView.getSettings().setAllowFileAccess(true);
+    webView.getSettings().setAllowFileAccessFromFileURLs(true);
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
@@ -128,7 +130,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       String userAgent = (String) params.get("userAgent");
       updateUserAgent(userAgent);
     }
-    if (params.containsKey("initialUrl")) {
+    if (params.containsKey("initialUrl") && params.containsKey("htmlContent") && params.get("htmlContent") != null) {
+        String url = (String) params.get("initialUrl");
+        String htmlContent = (String) params.get("htmlContent");
+        webView.loadDataWithBaseURL(url, htmlContent, "text/html", "UTF-8", null);
+    } else if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }

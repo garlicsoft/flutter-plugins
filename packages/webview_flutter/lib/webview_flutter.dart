@@ -231,6 +231,7 @@ class WebView extends StatefulWidget {
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
+    this.htmlContent = null,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
         assert(allowsInlineMediaPlayback != null),
@@ -285,6 +286,8 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String? initialUrl;
+
+  final String? htmlContent;
 
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -475,6 +478,7 @@ class _WebViewState extends State<WebView> {
 CreationParams _creationParamsfromWidget(WebView widget) {
   return CreationParams(
     initialUrl: widget.initialUrl,
+    htmlContent: widget.htmlContent,
     webSettings: _webSettingsFromWidget(widget),
     javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
     userAgent: widget.userAgent,

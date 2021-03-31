@@ -115,7 +115,10 @@
     // https://github.com/flutter/flutter/issues/36228
 
     NSString* initialUrl = args[@"initialUrl"];
-    if ([initialUrl isKindOfClass:[NSString class]]) {
+    NSString* htmlContent = args[@"htmlContent"];
+    if ([htmlContent isKindOfClass:[NSString class]] && [initialUrl isKindOfClass:[NSString class]]) {
+      [self loadHtml: htmlContent withBaseURL: initialUrl];
+    } else if ([initialUrl isKindOfClass:[NSString class]]) {
       [self loadUrl:initialUrl];
     }
   }
@@ -442,6 +445,10 @@
         }
     }
     return true;
+}
+
+- (void)loadHtml:(NSString *) htmlContent withBaseURL:(NSString *) baseURL {
+    [_webView loadHTMLString: htmlContent baseURL: [NSURL URLWithString: baseURL]];
 }
 
 - (void)registerJavaScriptChannels:(NSSet*)channelNames
