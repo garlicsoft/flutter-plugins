@@ -104,8 +104,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     platformThreadHandler = new Handler(context.getMainLooper());
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-    }
+      webView.getSettings().setMixedContentMode(webView.getSettings().MIXED_CONTENT_ALWAYS_ALLOW);
+  }
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
     webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
